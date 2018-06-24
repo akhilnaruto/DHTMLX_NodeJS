@@ -1,20 +1,29 @@
 {
   "name": "dhx-gantt-app",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "dependencies": {
+    "bluebird": "^3.5.1",
     "body-parser": "^1.15.0",
-    "express":"4.13.4"
+    "date-format-lite": "^17.7.0",
+    "express": "4.13.4",
+    "promise-mysql": "^3.3.1"
   },
-  "devDependencies": {
-    
-  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhilnaruto/DHTMLX_NodeJS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/akhilnaruto/DHTMLX_NodeJS/issues"
+  },
+  "homepage": "https://github.com/akhilnaruto/DHTMLX_NodeJS#readme",
+  "description": ""
 }
