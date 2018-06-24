@@ -46,52 +46,121 @@ app.get('/data',function(request, response){
 
 });
 
-// add new task
-app.post('/data/task', function(req,res){
-    var task = getTask(req.body); 
-    db.query("Insert into gantt_tasks(text, start_date, duration, progress, percent values (?, ?, ?, ?, ?)"
-          [task.text, task.start_date, task.duration, task.progress, task.percent]
-        ).then(function(result){
-            sendResponse(res, "inserted", result.insertId);
-        }).catch(function(error){
-            sendResponse(res, error, null, error);
-          });  
-})
-
-//update task
-app.put("data/task/:id",function(req, res){
-    var sid = req.params.id;
-    task = getTask(req.body);
-
-    db.query("update gantt_tasks SET text = ?, start_date = ?, duration = ?, progress = ?, parent = ? where id = ?",
-      [task.text. task.start_date, task.duration, task.progress, task.parent, sid]
-    ).then(function(result){
-       
-    }).catch(function(error){
-        sendResponse(res, error, null, error)
+// add a new task
+app.post("/data/task", function (req, res) { 
+    var task = getTask(req.body);  
+   
+    db.query("INSERT INTO gantt_tasks(text, start_date, duration, progress, parent)"
+      + " VALUES (?,?,?,?,?)", 
+      [task.text, task.start_date, task.duration, task.progress, task.parent])
+    .then (function (result) {
+      sendResponse(res, "inserted", result.insertId);
+    })
+    .catch(function(error) {
+      sendResponse(res, "error", null, error); 
     });
-
-});
-
-function getTask(data){
-    return{
-        text: data.text,
-        start_date: data.start_date.date("YYYY-MM-DD"),
-        duration: data.duration,
-        progress: data.progress || 0,
-        parent: data.parent
-    }
-};
-
-function sendResponse(response, action, tid, error){
-    if(action == "error"){
-        console.log("error");
-    }
+  });
+   
+  // update a task
+  app.put("/data/task/:id", function (req, res) {
+    var sid = req.params.id,
+      task = getTask(req.body);
+   
+    db.query("UPDATE gantt_tasks SET text = ?, start_date = ?, "
+      + "duration = ?, progress = ?, parent = ? WHERE id = ?",
+      [task.text, task.start_date, task.duration, task.progress, task.parent, sid])
+    .then (function(result) {
+      sendResponse(res, "updated");
+    })
+    .catch(function(error) {
+      sendResponse(res, "error", null, error); 
+    });
+  });
+   
+  // delete a task
+  app.delete("/data/task/:id", function (req, res) {
+    var sid = req.params.id;
+    db.query("DELETE FROM gantt_tasks WHERE id = ?", [sid])
+    .then (function (result) {
+      sendResponse(res, "deleted");
+    })
+    .catch(function(error) {
+      sendResponse(res, "error", null, error); 
+    });
+  });
+   
+  // add a link
+  app.post("/data/link", function (req, res) {
+    var link = getLink(req.body);
+   
+    db.query("INSERT INTO gantt_links(source, target, type) VALUES (?,?,?)", 
+      [link.source, link.target, link.type])
+    .then (function (result) {
+      sendResponse(res, "inserted", result.insertId);
+    })
+    .catch(function(error) {
+      sendResponse(res, "error", null, error); 
+    });
+  });
+   
+  // update a link
+  app.put("/data/link/:id", function (req, res) {
+    var sid = req.params.id,
+      link = getLink(req.body);
+   
+    db.query("UPDATE gantt_links SET source = ?, target = ?, type = ? WHERE id = ?", 
+      [link.source, link.target, link.type, sid])
+    .then (function (result) {
+      sendResponse(res, "updated");
+    })
+    .catch(function(error) {
+      sendResponse(res, "error", null, error); 
+    });
+  });
+   
+  // delete a link
+  app.delete("/data/link/:id", function (req, res) {
+    var sid = req.params.id;
+    db.query("DELETE FROM gantt_links WHERE id = ?", 
+      [sid])
+    .then (function (result) {
+      sendResponse(res, "deleted");
+    })
+    .catch(function(error) {
+        sendResponse(res, "error", null, error); 
+    });
+  });
+   
+   
+  function getTask(data) {
+    return {
+      text: data.text,
+      start_date: data.start_date.date("YYYY-MM-DD"),
+      duration: data.duration,
+      progress: data.progress || 0,
+      parent: data.parent
+    };
+  }
+   
+  function getLink(data) {
+    return {
+      source: data.source,
+      target: data.target,
+      type: data.type
+    };
+  }
+   
+  function sendResponse(res, action, tid, error) {
+   
+    if (action == "error")
+      console.log(error);
+   
     var result = {
-        action: action
-    }
-    if(tid !== undefined && tid !== null){
-        result.tid = tid;
-    }
-    response.send(result);
-}
+      action: action
+    };
+    if (tid !== undefined && tid !== null)
+      result.tid = tid;
+   
+    res.send(result);
+  }
+  
