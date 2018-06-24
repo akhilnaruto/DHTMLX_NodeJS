@@ -20,6 +20,10 @@
             gantt.config.xml_date = "%Y-%m-%d %H:%i:%s";
             gantt.init("gantt-here");
             gantt.load("/data");
+
+            var dp = new gantt.dataProcessor("/data");
+            dp.init(gantt);
+            dp.setTransactionMode("REST");
            
     </script>
 </body>
